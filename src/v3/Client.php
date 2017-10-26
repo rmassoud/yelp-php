@@ -24,7 +24,7 @@ class Client implements HttpContract
      *
      * @param array $options
      */
-    public function __construct(array $options = array())
+    public function __construct(array $options = array(), array $params = array())
     {
         $defaults = [
             'accessToken' => null,
@@ -34,7 +34,7 @@ class Client implements HttpContract
         $this->parseConfiguration($options, $defaults);
 
         if (!$this->getHttpClient()) {
-            $this->setHttpClient($this->createDefaultHttpClient());
+            $this->setHttpClient($this->createDefaultHttpClient($params));
         }
     }
 
@@ -43,13 +43,17 @@ class Client implements HttpContract
      *
      * @return HttpClient
      */
-    public function createDefaultHttpClient()
+    public function createDefaultHttpClient(array $http_params = [])
     {
-        return new HttpClient([
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ]
-        ]);
+        $http_params = array_merge(
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->accessToken,
+                ]
+            ],
+            $http_params
+        );
+        return new HttpClient($http_params);
     }
 
     /**
