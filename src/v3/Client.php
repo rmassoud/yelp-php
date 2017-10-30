@@ -9,6 +9,9 @@ use Stevenmaguire\Yelp\Tool\HttpTrait;
 
 class Client implements HttpContract
 {
+
+    private $proxy;
+
     use ConfigurationTrait,
         HttpTrait;
 
@@ -32,9 +35,11 @@ class Client implements HttpContract
         ];
 
         $this->parseConfiguration($options, $defaults);
+        $this->proxy = $proxy;
+
 
         if (!$this->getHttpClient()) {
-            $this->setHttpClient($this->createDefaultHttpClient($proxy));
+            $this->setHttpClient($this->createDefaultHttpClient());
         }
     }
 
@@ -43,13 +48,13 @@ class Client implements HttpContract
      *
      * @return HttpClient
      */
-    public function createDefaultHttpClient($proxy)
+    public function createDefaultHttpClient()
     {
         return new HttpClient([
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ],
-            'proxy' => $proxy
+            'proxy' => $this->proxy
         ]);
     }
 
